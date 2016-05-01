@@ -45,6 +45,7 @@
 7. In the case of a complete clearing of the change event, but part of or the entire sample pixel was not cleared, we should record the clearing date as D_CLEAR and make a note in the notes.  
 8. In most cases, the MODIS previews are not helpful. However, if the MODIS previews can suggest any date of change that is more accurate than the date provided from Landsat, it should be recorded as D_CHANGE.  
 9. If a sample pixel starts with Edge and ends with Full, it is still considered Full, but make note and draw seperate polygons.  
+10. In the case of a change within one pixel distance to the sample pixel, only date of the start of the event and date of the clearing needs to be recorded in D_EVENT and D_CLEAR respectively.  
 
 ## Data Details
 
