@@ -68,7 +68,7 @@ Landsat Scene: P007R059
 Image Files: /projectnb/landsat/projects/fusion/amz_site/data/landsat/P007R059/images/  
 Filename Pattern: L\*stack  
 Mask Band: 8  
-Cache Folder: /projectnb/landsat/projects/fusion/amz_site/data/landsat/P007R059/cache/.cache  
+Cache Folder: /projectnb/landsat/projects/fusion/amz_site/data/landsat/P007R059/cache/.cache2/  
 MODIS Tile: h10v08  
 MODIS Data: /projectnb/landsat/datasets/MODIS/h10v08/stacks/  
 Filename pattern: C\*tif  
@@ -81,7 +81,7 @@ Landsat Scene: P232R066
 Image Files: /projectnb/landsat/projects/fusion/amz_site/data/landsat/P232R066/images/  
 Filename Pattern: L\*stack  
 Mask Band: 8  
-Cache Folder: /projectnb/landsat/projects/fusion/amz_site/data/landsat/P232R066/cache/.cache  
+Cache Folder: /projectnb/landsat/projects/fusion/amz_site/data/landsat/P232R066/cache/.cache/  
 MODIS Tile: h11v09  
 MODIS Data: /projectnb/landsat/datasets/MODIS/h11v09/stacks/  
 Filename Pattern: C\*tif  
@@ -94,7 +94,7 @@ Landsat Scene: P227R065
 Image Files: /projectnb/landsat/projects/fusion/amz_site/data/landsat/P227R065/images/  
 Filename Pattern: L\*stack  
 Mask Band: 8  
-Cache Folder: /projectnb/landsat/projects/fusion/amz_site/data/landsat/P227R065/cache/.cache  
+Cache Folder: /projectnb/landsat/projects/fusion/amz_site/data/landsat/P227R065/cache/.cache/  
 MODIS Tile: h12v08  
 MODIS Data: /projectnb/landsat/datasets/MODIS/h12v08/stacks/  
 Filename Pattern: C\*tif  
