@@ -47,6 +47,7 @@
 9. If a sample pixel starts with Edge and ends with Full, it is still considered Full, but make note and draw seperate polygons.  
 10. In the case of a change within one pixel distance to the sample pixel, only date of the start of the event and date of the clearing needs to be recorded in D_EVENT and D_CLEAR respectively.  
 11. If clearing occured during the study time period in non-forest area, the NF class stands, the assessor hace the option to record the clearing date in D_CLEAR. No polygon need to be drawn.  
+12. If the majority of the pixel is already non-forest to begin with, and later on the part or all of the rest of the pixel is changed by a new event, this pixel shall be a change pixel. All dates shall be recorded and polygon for the new event shall be created. And the note should indicate this situation.  
 
 ## Confidence Levels
 
