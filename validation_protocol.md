@@ -17,9 +17,9 @@
 3. Use preview images to see what class it begins as (2012).  
 4. Use preview image to see what class it ends as.  
 5. Define the class of this sample pixel.  
-  i. If stable class, write down Ref_Code, Ref_Class, Note, and Confidence.  
-  ii. If change class, find last forest, first non-forest, and first clear in Landsat previews.  
-  iii. Use Google Earth with KML to find detail about change if needed.  
+  - If stable class, write down Ref_Code, Ref_Class, Note, and Confidence.  
+  - If change class, find last forest, first non-forest, and first clear in Landsat previews.  
+  - Use Google Earth with KML to find detail about change if needed.  
 6. Look to see if the change expanded, record date if it does.  
 7. Use MODIS previews or images to narrow down the change date (if possible).  
 8. Write down inclusion based on last image.  
@@ -28,10 +28,10 @@
   Near: if change is within 1 MODIS pixel it is considered near. More than 1 MODIS pixel and it is not considered change.  
 10. If change, create folder for change polygon. Create a new shapefile to draw the change event. The shapefile should have the same UTM projection as the Landsat scene that you are working on. In addition to the default "id" column, two additional whole number columns should be added: "pid" which indicate the ID of the sample pixel; "date" which indicate the date of the image that the drawing is based on.
 11. Use QGIS to draw polygon of the change. Create different polygons in the same file if the change expands (if it starts with the pixel on edge but ends with full). The "pid" attribute indicates pixel ID, while the "id" attribute indicates the ID of the change polygon (1 = first change, 2 = expandsion, etc). 
-12. Write down confidence. 
-  1: Not very confident, want to review with full group.  
-  2: Not entirely sure, want to review with 1 or 2 others (should be mostly changes.)  
-  3: Very confident. No need to review, will be all stable classes, no change pixel should have confidence 3.  
+12. Write down confidence.  
+  - 1: Not very confident, want to review with full group.  
+  - 2: Not entirely sure, want to review with 1 or 2 others (should be mostly changes.)  
+  - 3: Very confident. No need to review, will be all stable classes, no change pixel should have confidence 3.  
 13. Write down any notes. (e.g. is it agriculture, river, urban? etc.)  
 
 ## Special Rules  
@@ -57,11 +57,21 @@
 | 2 | simple review with another assessor | common and clear change pixels                           |
 | 1 | should be reviewed by the group     | unusual scenarios, change date or are hard to deliniate  |
 
-## Reviewing Process
-
-1. A sample of confidence 3 pixels from one assessor will be reviewed by another assessor. If the results are consistent, the master sample file will be updated. Othewise all pixels of that assessor will be reviewed.  
-2. All confidence 2 pixels will be reviewed by a group of 2 assessors together. One of the two should be the original assessor. The reviewing group can decide either to confirm the result, correct the result, or downgrade the pixel to a confidence 1 pixel. In the first two cases, the master sample file will be updated.  In the last case, the pixel will be rolled into the confidence 1 poll.  
-3. All confidence 1 pixels will be reviewed by the whole assessor group with additional senior members of the research team.  
+## Reviewing Process  
+1. Indicidual Review:  
+  - Reviewer will be assigned validation results from other assessor for review.  
+  - The reviewer will randomly select a set of 10 pixels from all confident 3 pixels to review. If the reviewer agree with the results of all 10 selected samples, we will consider all confident 3 pixels in the results correct. The reviewer shall assign the final assessment.  
+  - If 1 out of 10 pixels the reviewer found disagreement with the assessor's assessment, the reviewer shall select another 10 samples to review. If the reviewer agree with the results of the second set of samples, we will consider all confident 3 pixels in the results correct. The reviewer shall write note for that disagreement pixel and assign final assessment for the rest of all confident 3 pixels.  
+  - The reviewer will review all confident 2 pixels in the assigned results.  
+  - If the reviewer agree with the assessment, the reviewer shall assign final assessment for the pixels. If there's dissagreement between the reviewer's opinion and the original assessment, the reviewer shall write down the note and leave the pixel for further group review.  
+2. Group Review:  
+  - All confident 1 pixels and confident 2 pixels with disagreement between original assessment and reviewer's assessment shall be reviewed by a group of at least 2 assessors.  
+  - The original assessor should always be part of the review group.  
+  - The review group can either discuss and agree on a final assessment or downgrade the pixel to confident 1 for further review.  
+3. Final Review:  
+  - All confidence 1 pixels will be reviewed by the whole assessor group and possibly with additional senior members of the research team.  
+  - The final review group will discuss a proper assessment of the pixel.  
+  - In the rare case that the pixel cannot be assessed due to lack of information of the pixel, the final review group may decide to omit this pixel from further validation process.  
 
 ## Data Details
 
