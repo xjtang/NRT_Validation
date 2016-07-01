@@ -5,10 +5,12 @@
 # Project: NRT_Compare
 # By xjtang
 # Created On: 5/27/2016
+# Last Update: 7/1/2016
 #
 # Version 1.0 - 5/27/2016
 #   Script created for analysing the reference dataset
 #
+# Updates of Version 1.1 -7/1/2016
 #   1.Added new function to analyse change dates.   
 #
 # -------------------------------------------------------
