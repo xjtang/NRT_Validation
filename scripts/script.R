@@ -5,15 +5,16 @@
 # Project: NRT_Compare
 # By xjtang
 # Created On: 5/27/2016
-# Last Update: 6/27/2016
 #
 # Version 1.0 - 5/27/2016
 #   Script created for analysing the reference dataset
 #
-# Updates of Version 1.1 -6/27/2016
 #   1.Added new function to analyse change dates.   
 #
 # -------------------------------------------------------
+
+# library
+library(png)
 
 # conf_mat
 # create confusion matrix
@@ -47,10 +48,10 @@ conf_mat <- function(file,res,ref,output){
 
 # sum_dates
 # summarize date information
-eFile <- 'C:/Users/HotDog/Desktop/NRT/Analysis/Date/CSV/event.csv'
-pFile <- 'C:/Users/HotDog/Desktop/NRT/Analysis/Date/CSV/fu.csv'
-oPath <- 'C:/Users/HotDog/Desktop/NRT/Analysis/Date/CSV/fu/'
-oFile <- 'C:/Users/HotDog/Desktop/NRT/Analysis/Date/CSV/fu_result.csv'
+eFile <- 'E:/NRT/Analysis/Date/CSV/event_join.csv'
+pFile <- 'E:/NRT/Analysis/Date/CSV/ti.csv'
+oPath <- 'E:/NRT/Analysis/Date/CSV/ti/'
+oFile <- 'E:/NRT/Analysis/Date/CSV/ti_result.csv'
 sum_dates <-function(eventFile,pieceFile,outPath,outFile){
   
   # read input file
@@ -58,15 +59,20 @@ sum_dates <-function(eventFile,pieceFile,outPath,outFile){
   pieces <- read.table(pieceFile,sep=',',stringsAsFactors=F,header=T)
   
   # initilize overall output file
-  rall <- matrix(0,nrow(events),10)
+  rall <- matrix(0,nrow(events),12)
+  colnames(rall) <- c('PID','EAREA','DAREA','PROP','DLASTF','DFSTNF','DEVENT','DCLEAR','D25','D50','D75','LAG')
   
   # loop through all events
   for(i in 1:nrow(events)){
     
     # get information
-    pid <- events[i,'PID']
-    earea <- events[i,'AREA2']
-    event_pieces <- pieces[pieces[,'PID']==pid,]
+    rall[i,'PID'] <- events[i,'PID']
+    rall[i,'EAREA'] <- events[i,'AREA2']
+    rall[i,'DLASTF'] <- events[i,'D_LAST_F']
+    rall[i,'DFSTNF'] <- events[i,'D_FIRST_NF']
+    rall[i,'DEVENT'] <- events[i,'D_EVENT']
+    rall[i,'DCLEAR'] <- events[i,'D_CLEAR']
+    event_pieces <- pieces[pieces[,'PID']==rall[i,'PID'],]
     if(max((event_pieces[,'DATE']>=2013000)&(event_pieces[,'DATE']<2016000))){
       event_dates <- sort(unique(event_pieces[(event_pieces[,'DATE']>=2013000)&(event_pieces[,'DATE']<2016000),'DATE']))
     }else{
@@ -75,36 +81,148 @@ sum_dates <-function(eventFile,pieceFile,outPath,outFile){
     
     # initialize results
     r <- matrix(0,length(event_dates),6)
-    r[,1] <- pid
-    r[,2] <- earea
+    colnames(r) <- c('PID','EAREA','DATE','DAREA','CAREA','PROP')
+    r[,'PID'] <- rall[i,'PID']
+    r[,'EAREA'] <- rall[i,'EAREA']
     areasum <- 0
         
     # calculate areas and proportions
     for(j in 1:length(event_dates)){
       date_pieces <- event_pieces[event_pieces[,'DATE']==event_dates[j],]
-      r[j,3] <- event_dates[j]
-      r[j,4] <- sum(date_pieces[,'PAREA'])
-      areasum <- areasum+r[j,4]
-      r[j,5] <- areasum
-      r[j,6] <- r[j,5]/earea
+      r[j,'DATE'] <- event_dates[j]
+      r[j,'DAREA'] <- sum(date_pieces[,'PAREA'])
+      areasum <- areasum+r[j,'DAREA']
+      r[j,'CAREA'] <- areasum
+      r[j,'PROP'] <- r[j,'CAREA']/rall[i,'EAREA']
+      
+      # update overall results
+      if((rall[i,'D25']==0)&(r[j,'PROP']>=0.25)){
+        rall[i,'D25'] <- r[j,'DATE']
+      }
+      if((rall[i,'D50']==0)&(r[j,'PROP']>=0.5)){
+        rall[i,'D50'] <- r[j,'DATE']
+      }
+      if((rall[i,'D75']==0)&(r[j,'PROP']>=0.75)){
+        rall[i,'D75'] <- r[j,'DATE']
+      }
+      
+    }
+    
+    # update overall results
+    rall[i,'DAREA'] <- r[nrow(r),'CAREA']
+    rall[i,'PROP'] <- r[nrow(r),'PROP']
+    if(rall[i,'DEVENT']==0){
+      rall[i,'LAG'] <- sub_doy(rall[i,'D25'],rall[i,'DFSTNF'])
+    }else{
+      rall[i,'LAG'] <- sub_doy(rall[i,'D25'],rall[i,'DEVENT'])
     }
     
     # export result
-    colnames(r) <- c('PID','EAREA','DATE','DAREA','CAREA','PROP')
-    write.table(r,paste(outPath,'event_',pid,'.csv',sep=''),sep=',',
+    write.table(r,paste(outPath,'event_',rall[i,'PID'],'.csv',sep=''),sep=',',
                 row.names=F,col.names=T)
-    
-    # make plot
-    
-    
   }
   
   # export overall results
-  colnames(rall) <- c('PID','EAREA','DAREA','PROP','DLASTF','DFSTNF','DEVENT','D25','D50','D75','LAG')
-  write.table(rall,outFile,sep=',',
-              row.names=F,col.names=T)
+  write.table(rall,outFile,sep=',',row.names=F,col.names=T)
   
   # done
+  return(0)
   
 }
 
+# gen_plot
+# generate plots for dates analysis
+rPath <- 'E:/NRT/Analysis/Date/CSV/'
+oPath2 <- 'E:/NRT/Analysis/Date/CSV/PNG/'
+gen_plot <- function(eventFile,resultPath,outPath){
+  
+  # read event file
+  events <- read.table(eventFile,sep=',',stringsAsFactors=F,header=T)
+  
+  # loop through all events
+  for(i in 1:nrow(events)){
+       
+    # read input file
+    totalfile <- 0 
+    if(file.exists(paste(resultPath,'fu/event_',events[i,'PID'],'.csv',sep=''))){
+      r1 <- read.table(paste(resultPath,'fu/event_',events[i,'PID'],'.csv',sep=''),sep=',',stringsAsFactors=F,header=T)
+      totalfile <- totalfile+1
+    }
+    if(file.exists(paste(resultPath,'mc/event_',events[i,'PID'],'.csv',sep=''))){
+      r2 <- read.table(paste(resultPath,'mc/event_',events[i,'PID'],'.csv',sep=''),sep=',',stringsAsFactors=F,header=T)
+      totalfile <- totalfile+1
+    }
+    if(file.exists(paste(resultPath,'ti/event_',events[i,'PID'],'.csv',sep=''))){
+      r3 <- read.table(paste(resultPath,'ti/event_',events[i,'PID'],'.csv',sep=''),sep=',',stringsAsFactors=F,header=T)
+      totalfile <- totalfile+1
+    }
+    if(totalfile==0){next}
+    
+    # initialize plot file
+    png(file=paste(outPath,'event_',events[i,'PID'],'.png',sep=''),width=1000,height=1500,pointsize=20)
+    cPar <- par(mfrow=c(3,1))
+    
+    # make plot
+    x <- floor(r1[,'DATE']/1000)+(r1[,'DATE']-floor(r1[,'DATE']/1000)*1000)/365
+    plot(x,r1[,'PROP'],type='p',col='black',pch=16,
+         main='Fusion',ylab='Detect Ratio',xlab='Date of Detection',
+         xlim=c(2013,2016),ylim=c(0,1)
+    )
+    axis(1,at=c(2013,2014,2015,2016))
+    if(events[i,'D_EVENT']>0){
+      v1 <- floor(events[i,'D_EVENT']/1000)+(events[i,'D_EVENT']-floor(events[i,'D_EVENT']/1000)*1000)/365
+      abline(v=v1,col='red')
+    }else{
+      v1 <- floor(events[i,'D_FIRST_NF']/1000)+(events[i,'D_FIRST_NF']-floor(events[i,'D_FIRST_NF']/1000)*1000)/365
+      abline(v=v1,col='red')
+    }
+    if(events[i,'D_CLEAR']>0){
+      v2 <- floor(events[i,'D_CLEAR']/1000)+(events[i,'D_CLEAR']-floor(events[i,'D_CLEAR']/1000)*1000)/365
+      abline(v=v2,col='blue')
+    }
+    x <- floor(r2[,'DATE']/1000)+(r2[,'DATE']-floor(r2[,'DATE']/1000)*1000)/365
+    plot(x,r2[,'PROP'],type='p',col='black',pch=16,
+         main='MCCDC',ylab='Detect Ratio',xlab='Date of Detection',
+         xlim=c(2013,2016),ylim=c(0,1)
+    )
+    axis(1,at=c(2013,2014,2015,2016))
+    if(events[i,'D_EVENT']>0){
+      v1 <- floor(events[i,'D_EVENT']/1000)+(events[i,'D_EVENT']-floor(events[i,'D_EVENT']/1000)*1000)/365
+      abline(v=v1,col='red')
+    }else{
+      v1 <- floor(events[i,'D_FIRST_NF']/1000)+(events[i,'D_FIRST_NF']-floor(events[i,'D_FIRST_NF']/1000)*1000)/365
+      abline(v=v1,col='red')
+    }
+    if(events[i,'D_CLEAR']>0){
+      v2 <- floor(events[i,'D_CLEAR']/1000)+(events[i,'D_CLEAR']-floor(events[i,'D_CLEAR']/1000)*1000)/365
+      abline(v=v2,col='blue')
+    }
+    x <- floor(r3[,'DATE']/1000)+(r3[,'DATE']-floor(r3[,'DATE']/1000)*1000)/365
+    plot(x,r3[,'PROP'],type='p',col='black',pch=16,
+         main='Terra-i',ylab='Detect Ratio',xlab='Date of Detection',
+         xlim=c(2013,2016),ylim=c(0,1)
+    )
+    axis(1,at=c(2013,2014,2015,2016))
+    if(events[i,'D_EVENT']>0){
+      v1 <- floor(events[i,'D_EVENT']/1000)+(events[i,'D_EVENT']-floor(events[i,'D_EVENT']/1000)*1000)/365
+      abline(v=v1,col='red')
+    }else{
+      v1 <- floor(events[i,'D_FIRST_NF']/1000)+(events[i,'D_FIRST_NF']-floor(events[i,'D_FIRST_NF']/1000)*1000)/365
+      abline(v=v1,col='red')
+    }
+    if(events[i,'D_CLEAR']>0){
+      v2 <- floor(events[i,'D_CLEAR']/1000)+(events[i,'D_CLEAR']-floor(events[i,'D_CLEAR']/1000)*1000)/365
+      abline(v=v2,col='blue')
+    }
+    
+    # close plot 
+    dev.off()
+  }
+  
+  # done
+  return(0)
+}
+# substract doy
+sub_doy<-function(x,y){
+  return((floor(x/1000)-floor(y/1000))*365+((x-floor(x/1000)*1000)-(y-floor(y/1000)*1000)))
+}
