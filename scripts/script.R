@@ -50,10 +50,10 @@ conf_mat <- function(file,res,ref,output){
 
 # sum_dates
 # summarize date information
-eFile <- 'E:/NRT/Analysis/Date/CSV/event_join.csv'
-pFile <- 'E:/NRT/Analysis/Date/CSV/ti.csv'
-oPath <- 'E:/NRT/Analysis/Date/CSV/ti/'
-oFile <- 'E:/NRT/Analysis/Date/CSV/ti_result.csv'
+eFile <- 'J:/NRT/Analysis/Date/CSV/event_join.csv'
+pFile <- 'J:/NRT/Analysis/Date/CSV/ti.csv'
+oPath <- 'J:/NRT/Analysis/Date/CSV/ti/'
+oFile <- 'J:/NRT/Analysis/Date/CSV/ti_result.csv'
 sum_dates <-function(eventFile,pieceFile,outPath,outFile){
   
   # read input file
@@ -134,8 +134,8 @@ sum_dates <-function(eventFile,pieceFile,outPath,outFile){
 
 # gen_plot
 # generate plots for dates analysis
-rPath <- 'E:/NRT/Analysis/Date/CSV/'
-oPath2 <- 'E:/NRT/Analysis/Date/CSV/PNG/'
+rPath <- 'J:/NRT/Analysis/Date/CSV/'
+oPath2 <- 'J:/NRT/Analysis/Date/CSV/PNG/'
 gen_plot <- function(eventFile,resultPath,outPath){
   
   # read event file
@@ -168,7 +168,7 @@ gen_plot <- function(eventFile,resultPath,outPath){
     x <- floor(r1[,'DATE']/1000)+(r1[,'DATE']-floor(r1[,'DATE']/1000)*1000)/365
     plot(x,r1[,'PROP'],type='p',col='black',pch=16,
          main='Fusion',ylab='Detect Ratio',xlab='Date of Detection',
-         xlim=c(2013,2016),ylim=c(0,1)
+         xlim=c(2013,2016),ylim=c(0,1),xaxt='n'
     )
     axis(1,at=c(2013,2014,2015,2016))
     if(events[i,'D_EVENT']>0){
@@ -185,7 +185,7 @@ gen_plot <- function(eventFile,resultPath,outPath){
     x <- floor(r2[,'DATE']/1000)+(r2[,'DATE']-floor(r2[,'DATE']/1000)*1000)/365
     plot(x,r2[,'PROP'],type='p',col='black',pch=16,
          main='MCCDC',ylab='Detect Ratio',xlab='Date of Detection',
-         xlim=c(2013,2016),ylim=c(0,1)
+         xlim=c(2013,2016),ylim=c(0,1),xaxt='n'
     )
     axis(1,at=c(2013,2014,2015,2016))
     if(events[i,'D_EVENT']>0){
@@ -202,7 +202,7 @@ gen_plot <- function(eventFile,resultPath,outPath){
     x <- floor(r3[,'DATE']/1000)+(r3[,'DATE']-floor(r3[,'DATE']/1000)*1000)/365
     plot(x,r3[,'PROP'],type='p',col='black',pch=16,
          main='Terra-i',ylab='Detect Ratio',xlab='Date of Detection',
-         xlim=c(2013,2016),ylim=c(0,1)
+         xlim=c(2013,2016),ylim=c(0,1),xaxt='n'
     )
     axis(1,at=c(2013,2014,2015,2016))
     if(events[i,'D_EVENT']>0){
