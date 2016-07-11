@@ -149,14 +149,23 @@ gen_plot <- function(eventFile,resultPath,outPath){
     if(file.exists(paste(resultPath,'fu/event_',events[i,'PID'],'.csv',sep=''))){
       r1 <- read.table(paste(resultPath,'fu/event_',events[i,'PID'],'.csv',sep=''),sep=',',stringsAsFactors=F,header=T)
       totalfile <- totalfile+1
+    }else{
+      r1 <- matrix(0,2,2)
+      colnames(r1) <- c('DATE','PROP')
     }
     if(file.exists(paste(resultPath,'mc/event_',events[i,'PID'],'.csv',sep=''))){
       r2 <- read.table(paste(resultPath,'mc/event_',events[i,'PID'],'.csv',sep=''),sep=',',stringsAsFactors=F,header=T)
       totalfile <- totalfile+1
+    }else{
+      r2 <- matrix(0,2,2)
+      colnames(r2) <- c('DATE','PROP')
     }
     if(file.exists(paste(resultPath,'ti/event_',events[i,'PID'],'.csv',sep=''))){
       r3 <- read.table(paste(resultPath,'ti/event_',events[i,'PID'],'.csv',sep=''),sep=',',stringsAsFactors=F,header=T)
       totalfile <- totalfile+1
+    }else{
+      r3 <- matrix(0,2,2)
+      colnames(r3) <- c('DATE','PROP')
     }
     if(totalfile==0){next}
     
