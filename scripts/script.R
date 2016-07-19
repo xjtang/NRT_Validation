@@ -5,7 +5,7 @@
 # Project: NRT_Compare
 # By xjtang
 # Created On: 5/27/2016
-# Last Update: 7/1/2016
+# Last Update: 7/18/2016
 #
 # Version 1.0 - 5/27/2016
 #   Script created for analysing the reference dataset
@@ -51,9 +51,9 @@ conf_mat <- function(file,res,ref,output){
 # sum_dates
 # summarize date information
 eFile <- 'J:/NRT/Analysis/Date/CSV/event_join.csv'
-pFile <- 'J:/NRT/Analysis/Date/CSV/ti.csv'
-oPath <- 'J:/NRT/Analysis/Date/CSV/ti/'
-oFile <- 'J:/NRT/Analysis/Date/CSV/ti_result.csv'
+pFile <- 'J:/NRT/Analysis/Date/CSV/mc.csv'
+oPath <- 'J:/NRT/Analysis/Date/CSV/mc/'
+oFile <- 'J:/NRT/Analysis/Date/CSV/mc_result.csv'
 sum_dates <-function(eventFile,pieceFile,outPath,outFile){
   
   # read input file
@@ -61,8 +61,8 @@ sum_dates <-function(eventFile,pieceFile,outPath,outFile){
   pieces <- read.table(pieceFile,sep=',',stringsAsFactors=F,header=T)
   
   # initilize overall output file
-  rall <- matrix(0,nrow(events),12)
-  colnames(rall) <- c('PID','EAREA','DAREA','PROP','DLASTF','DFSTNF','DEVENT','DCLEAR','D25','D50','D75','LAG')
+  rall <- matrix(0,nrow(events),13)
+  colnames(rall) <- c('PID','EAREA','DAREA','PROP','DLASTF','DFSTNF','DEXPD','DEVENT','DCLEAR','D25','D50','D75','LAG')
   
   # loop through all events
   for(i in 1:nrow(events)){
@@ -72,6 +72,7 @@ sum_dates <-function(eventFile,pieceFile,outPath,outFile){
     rall[i,'EAREA'] <- events[i,'AREA2']
     rall[i,'DLASTF'] <- events[i,'D_LAST_F']
     rall[i,'DFSTNF'] <- events[i,'D_FIRST_NF']
+    rall[i,'DEXPD'] <- events[i,'D_EXPAND']
     rall[i,'DEVENT'] <- events[i,'D_EVENT']
     rall[i,'DCLEAR'] <- events[i,'D_CLEAR']
     event_pieces <- pieces[pieces[,'PID']==rall[i,'PID'],]
@@ -170,7 +171,7 @@ gen_plot <- function(eventFile,resultPath,outPath){
     if(totalfile==0){next}
     
     # initialize plot file
-    png(file=paste(outPath,'event_',events[i,'PID'],'.png',sep=''),width=1000,height=1500,pointsize=20)
+    png(file=paste(outPath,'event_',events[i,'PID'],'.png',sep=''),width=2000,height=1500,pointsize=20)
     cPar <- par(mfrow=c(3,1))
     
     # make plot
@@ -191,6 +192,10 @@ gen_plot <- function(eventFile,resultPath,outPath){
       v2 <- floor(events[i,'D_CLEAR']/1000)+(events[i,'D_CLEAR']-floor(events[i,'D_CLEAR']/1000)*1000)/365
       abline(v=v2,col='blue')
     }
+    if(events[i,'D_EXPAND']>0){
+      v2 <- floor(events[i,'D_EXPAND']/1000)+(events[i,'D_EXPAND']-floor(events[i,'D_CLEAR']/1000)*1000)/365
+      abline(v=v2,col='green')
+    }
     x <- floor(r2[,'DATE']/1000)+(r2[,'DATE']-floor(r2[,'DATE']/1000)*1000)/365
     plot(x,r2[,'PROP'],type='p',col='black',pch=16,
          main='MCCDC',ylab='Detect Ratio',xlab='Date of Detection',
@@ -207,6 +212,10 @@ gen_plot <- function(eventFile,resultPath,outPath){
     if(events[i,'D_CLEAR']>0){
       v2 <- floor(events[i,'D_CLEAR']/1000)+(events[i,'D_CLEAR']-floor(events[i,'D_CLEAR']/1000)*1000)/365
       abline(v=v2,col='blue')
+    }
+    if(events[i,'D_EXPAND']>0){
+      v2 <- floor(events[i,'D_EXPAND']/1000)+(events[i,'D_EXPAND']-floor(events[i,'D_CLEAR']/1000)*1000)/365
+      abline(v=v2,col='green')
     }
     x <- floor(r3[,'DATE']/1000)+(r3[,'DATE']-floor(r3[,'DATE']/1000)*1000)/365
     plot(x,r3[,'PROP'],type='p',col='black',pch=16,
@@ -225,6 +234,10 @@ gen_plot <- function(eventFile,resultPath,outPath){
       v2 <- floor(events[i,'D_CLEAR']/1000)+(events[i,'D_CLEAR']-floor(events[i,'D_CLEAR']/1000)*1000)/365
       abline(v=v2,col='blue')
     }
+    if(events[i,'D_EXPAND']>0){
+      v2 <- floor(events[i,'D_EXPAND']/1000)+(events[i,'D_EXPAND']-floor(events[i,'D_CLEAR']/1000)*1000)/365
+      abline(v=v2,col='green')
+    }
     
     # close plot 
     dev.off()
@@ -233,6 +246,24 @@ gen_plot <- function(eventFile,resultPath,outPath){
   # done
   return(0)
 }
+
+# grp_plot
+# make plots with groups of events
+dFile <- 'J:/NRT/Analysis/Date/CSV/datafile.csv'
+oPath3 <- 'J:/NRT/Analysis/Date/CSV/group_plot/'
+grp_plot <- function(dataFile,group,color,outPath){
+  
+  # read data
+  d <- read.table(dataFile,sep=',',stringsAsFactors=F,header=T)
+  
+  
+  
+  
+  
+  # done
+  return(0)
+}
+
 # substract doy
 sub_doy<-function(x,y){
   return((floor(x/1000)-floor(y/1000))*365+((x-floor(x/1000)*1000)-(y-floor(y/1000)*1000)))
