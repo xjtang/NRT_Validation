@@ -5,13 +5,18 @@
 # Project: NRT_Compare
 # By xjtang
 # Created On: 5/27/2016
-# Last Update: 7/18/2016
+# Last Update: 8/1/2016
 #
 # Version 1.0 - 5/27/2016
 #   Script created for analysing the reference dataset
 #
-# Updates of Version 1.1 -7/1/2016
-#   1.Added new function to analyse change dates.   
+# Updates of Version 1.1 - 7/1/2016
+#   1.Added new function to analyse change dates.
+#
+# Updates of Version 1.2 - 8/1/2016
+#   1.Bug fix.
+#   2.Added new function to make plots of group events.
+#   3.Optimized code.
 #
 # -------------------------------------------------------
 
@@ -50,10 +55,10 @@ conf_mat <- function(file,res,ref,output){
 
 # sum_dates
 # summarize date information
-eFile <- 'J:/NRT/Analysis/Date/CSV/event_join.csv'
-pFile <- 'J:/NRT/Analysis/Date/CSV/mc.csv'
-oPath <- 'J:/NRT/Analysis/Date/CSV/mc/'
-oFile <- 'J:/NRT/Analysis/Date/CSV/mc_result.csv'
+eFile <- 'I:/NRT/Analysis/Date/CSV/event_join.csv'
+pFile <- 'I:/NRT/Analysis/Date/CSV/mc.csv'
+oPath <- 'I:/NRT/Analysis/Date/CSV/mc/'
+oFile <- 'I:/NRT/Analysis/Date/CSV/mc_result.csv'
 sum_dates <-function(eventFile,pieceFile,outPath,outFile){
   
   # read input file
@@ -135,8 +140,8 @@ sum_dates <-function(eventFile,pieceFile,outPath,outFile){
 
 # gen_plot
 # generate plots for dates analysis
-rPath <- 'J:/NRT/Analysis/Date/CSV/'
-oPath2 <- 'J:/NRT/Analysis/Date/CSV/PNG/'
+rPath <- 'I:/NRT/Analysis/Date/CSV/'
+oPath2 <- 'I:/NRT/Analysis/Date/CSV/PNG/'
 gen_plot <- function(eventFile,resultPath,outPath){
   
   # read event file
@@ -175,68 +180,56 @@ gen_plot <- function(eventFile,resultPath,outPath){
     cPar <- par(mfrow=c(3,1))
     
     # make plot
-    x <- floor(r1[,'DATE']/1000)+(r1[,'DATE']-floor(r1[,'DATE']/1000)*1000)/365
+    x <- doy2dy(r1[,'DATE'])
     plot(x,r1[,'PROP'],type='p',col='black',pch=16,
          main='Fusion',ylab='Detect Ratio',xlab='Date of Detection',
          xlim=c(2013,2016),ylim=c(0,1),xaxt='n'
     )
     axis(1,at=c(2013,2014,2015,2016))
     if(events[i,'D_EVENT']>0){
-      v1 <- floor(events[i,'D_EVENT']/1000)+(events[i,'D_EVENT']-floor(events[i,'D_EVENT']/1000)*1000)/365
-      abline(v=v1,col='red')
+      abline(v=doy2dy(events[i,'D_EVENT']),col='red')
     }else{
-      v1 <- floor(events[i,'D_FIRST_NF']/1000)+(events[i,'D_FIRST_NF']-floor(events[i,'D_FIRST_NF']/1000)*1000)/365
-      abline(v=v1,col='red')
+      abline(v=doy2dy(events[i,'D_FIRST_NF']),col='red')
     }
     if(events[i,'D_CLEAR']>0){
-      v2 <- floor(events[i,'D_CLEAR']/1000)+(events[i,'D_CLEAR']-floor(events[i,'D_CLEAR']/1000)*1000)/365
-      abline(v=v2,col='blue')
+      abline(v=doy2dy(events[i,'D_CLEAR']),col='blue')
     }
     if(events[i,'D_EXPAND']>0){
-      v2 <- floor(events[i,'D_EXPAND']/1000)+(events[i,'D_EXPAND']-floor(events[i,'D_CLEAR']/1000)*1000)/365
-      abline(v=v2,col='green')
+      abline(v=doy2dy(events[i,'D_EXPAND']),col='green')
     }
-    x <- floor(r2[,'DATE']/1000)+(r2[,'DATE']-floor(r2[,'DATE']/1000)*1000)/365
+    x <- doy2dy(r2[,'DATE'])
     plot(x,r2[,'PROP'],type='p',col='black',pch=16,
          main='MCCDC',ylab='Detect Ratio',xlab='Date of Detection',
          xlim=c(2013,2016),ylim=c(0,1),xaxt='n'
     )
     axis(1,at=c(2013,2014,2015,2016))
     if(events[i,'D_EVENT']>0){
-      v1 <- floor(events[i,'D_EVENT']/1000)+(events[i,'D_EVENT']-floor(events[i,'D_EVENT']/1000)*1000)/365
-      abline(v=v1,col='red')
+      abline(v=doy2dy(events[i,'D_EVENT']),col='red')
     }else{
-      v1 <- floor(events[i,'D_FIRST_NF']/1000)+(events[i,'D_FIRST_NF']-floor(events[i,'D_FIRST_NF']/1000)*1000)/365
-      abline(v=v1,col='red')
+      abline(v=doy2dy(events[i,'D_FIRST_NF']),col='red')
     }
     if(events[i,'D_CLEAR']>0){
-      v2 <- floor(events[i,'D_CLEAR']/1000)+(events[i,'D_CLEAR']-floor(events[i,'D_CLEAR']/1000)*1000)/365
-      abline(v=v2,col='blue')
+      abline(v=doy2dy(events[i,'D_CLEAR']),col='blue')
     }
     if(events[i,'D_EXPAND']>0){
-      v2 <- floor(events[i,'D_EXPAND']/1000)+(events[i,'D_EXPAND']-floor(events[i,'D_CLEAR']/1000)*1000)/365
-      abline(v=v2,col='green')
+      abline(v=doy2dy(events[i,'D_EXPAND']),col='green')
     }
-    x <- floor(r3[,'DATE']/1000)+(r3[,'DATE']-floor(r3[,'DATE']/1000)*1000)/365
+    x <- doy2dy(r3[,'DATE'])
     plot(x,r3[,'PROP'],type='p',col='black',pch=16,
          main='Terra-i',ylab='Detect Ratio',xlab='Date of Detection',
          xlim=c(2013,2016),ylim=c(0,1),xaxt='n'
     )
     axis(1,at=c(2013,2014,2015,2016))
     if(events[i,'D_EVENT']>0){
-      v1 <- floor(events[i,'D_EVENT']/1000)+(events[i,'D_EVENT']-floor(events[i,'D_EVENT']/1000)*1000)/365
-      abline(v=v1,col='red')
+      abline(v=doy2dy(events[i,'D_EVENT']),col='red')
     }else{
-      v1 <- floor(events[i,'D_FIRST_NF']/1000)+(events[i,'D_FIRST_NF']-floor(events[i,'D_FIRST_NF']/1000)*1000)/365
-      abline(v=v1,col='red')
+      abline(v=doy2dy(events[i,'D_FIRST_NF']),col='red')
     }
     if(events[i,'D_CLEAR']>0){
-      v2 <- floor(events[i,'D_CLEAR']/1000)+(events[i,'D_CLEAR']-floor(events[i,'D_CLEAR']/1000)*1000)/365
-      abline(v=v2,col='blue')
+      abline(v=doy2dy(events[i,'D_CLEAR']),col='blue')
     }
     if(events[i,'D_EXPAND']>0){
-      v2 <- floor(events[i,'D_EXPAND']/1000)+(events[i,'D_EXPAND']-floor(events[i,'D_CLEAR']/1000)*1000)/365
-      abline(v=v2,col='green')
+      abline(v=doy2dy(events[i,'D_EXPAND']),col='green')
     }
     
     # close plot 
@@ -249,22 +242,50 @@ gen_plot <- function(eventFile,resultPath,outPath){
 
 # grp_plot
 # make plots with groups of events
-dFile <- 'J:/NRT/Analysis/Date/CSV/datafile.csv'
-oPath3 <- 'J:/NRT/Analysis/Date/CSV/group_plot/'
-grp_plot <- function(dataFile,group,color,outPath){
+dPath <- 'I:/NRT/Analysis/Date/CSV/'
+oPath3 <- 'I:/NRT/Analysis/Date/CSV/group_plot/'
+grp_plot <- function(d,dataPath,outPath){
   
-  # read data
-  d <- read.table(dataFile,sep=',',stringsAsFactors=F,header=T)
+  # initialize plot
+  png(file=paste(outPath,'event_',events[i,'PID'],'.png',sep=''),width=2000,height=1500,pointsize=20)
+  cPar <- par(mfrow=c(3,1))
   
+  # loop through datasets
+  for(i in 1:3){
+    # loop through events
+    for(j in 1:nrow(d)){
+      # grab info
+      pid <- d[j,'PID']
+      baseDate <- min(d[j,'D_FIRST_NF'],d[j,'D_EVENT'])
+      # read file
+      if(i==1){
+        eventFile <- paste(dataPath,'fu/event_',pid,'.png',sep='')
+        e <- read.table(,sep=',',stringsAsFactors=F,header=T)
+      }else if(i==2){
+        eventFile <- paste(dataPath,'mc/event_',pid,'.png',sep='')
+        e <- read.table(,sep=',',stringsAsFactors=F,header=T)
+      }else{
+        eventFile <- paste(dataPath,'ti/event_',pid,'.png',sep='')
+        e <- read.table(,sep=',',stringsAsFactors=F,header=T)
+      }
+      
+      
+    }
+  }
   
-  
-  
+  # complete plot
+  dev.off()
   
   # done
   return(0)
 }
 
 # substract doy
-sub_doy<-function(x,y){
+sub_doy <- function(x,y){
   return((floor(x/1000)-floor(y/1000))*365+((x-floor(x/1000)*1000)-(y-floor(y/1000)*1000)))
+}
+
+# doy to decimal year
+doy2dy <- function(x){
+  return(floor(x/1000)+(x-floor(x/1000)*1000)/365)
 }
