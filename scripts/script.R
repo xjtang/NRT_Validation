@@ -5,7 +5,7 @@
 # Project: NRT_Compare
 # By xjtang
 # Created On: 5/27/2016
-# Last Update: 8/1/2016
+# Last Update: 8/14/2016
 #
 # Version 1.0 - 5/27/2016
 #   Script created for analysing the reference dataset
@@ -13,7 +13,7 @@
 # Updates of Version 1.1 - 7/1/2016
 #   1.Added new function to analyse change dates.
 #
-# Updates of Version 1.2 - 8/1/2016
+# Updates of Version 1.2 - 8/14/2016
 #   1.Bug fix.
 #   2.Added new function to make plots of group events.
 #   3.Optimized code.
@@ -233,6 +233,7 @@ gen_plot <- function(eventFile,resultPath,outPath){
     }
     
     # close plot 
+    par(cPar)
     dev.off()
   }
   
@@ -244,36 +245,57 @@ gen_plot <- function(eventFile,resultPath,outPath){
 # make plots with groups of events
 dPath <- 'I:/NRT/Analysis/Date/CSV/'
 oPath3 <- 'I:/NRT/Analysis/Date/CSV/group_plot/'
-grp_plot <- function(d,dataPath,outPath){
+data <- read.table(eFile,sep=',',stringsAsFactors=F,header=T)
+grp_plot <- function(d,dataPath,outPath,outName){
   
   # initialize plot
-  png(file=paste(outPath,'event_',events[i,'PID'],'.png',sep=''),width=2000,height=1500,pointsize=20)
+  png(file=paste(outPath,outName,'.png',sep=''),width=2000,height=1500,pointsize=20)
   cPar <- par(mfrow=c(3,1))
   
   # loop through datasets
   for(i in 1:3){
+    # initialize plot
+    if(i==1){
+      model <- 'Fusion'
+      model2 <- 'fu'
+    }else if(i==2){
+      model <- 'MCCDC'
+      model2 <- 'mc'
+    }else{
+      model <- 'Terra_i'
+      model2 <- 'ti'
+    }
+    plot(0,-1,main=model,ylab='Detect Ratio',xlab='Lag Time',
+         xlim=c(-600,600),ylim=c(0,1))
     # loop through events
     for(j in 1:nrow(d)){
       # grab info
       pid <- d[j,'PID']
-      baseDate <- min(d[j,'D_FIRST_NF'],d[j,'D_EVENT'])
-      # read file
-      if(i==1){
-        eventFile <- paste(dataPath,'fu/event_',pid,'.png',sep='')
-        e <- read.table(,sep=',',stringsAsFactors=F,header=T)
-      }else if(i==2){
-        eventFile <- paste(dataPath,'mc/event_',pid,'.png',sep='')
-        e <- read.table(,sep=',',stringsAsFactors=F,header=T)
+      if(d[j,'D_EVENT']>0){
+        baseDate <- d[j,'D_EVENT']
       }else{
-        eventFile <- paste(dataPath,'ti/event_',pid,'.png',sep='')
-        e <- read.table(,sep=',',stringsAsFactors=F,header=T)
+        baseDate <- d[j,'D_FIRST_NF']
       }
-      
-      
+      if(d[j,'SCENE']=='P227R065'){
+        pCol <- 'red'
+      }else if(d[j,'SCENE']=='P232R066'){
+        pCol <- 'blue'
+      }else{
+        pCol <- 'green'
+      }
+      # read file
+      eventFile <- paste(dataPath,model2,'/event_',pid,'.csv',sep='')
+      if(!file.exists(eventFile)){next}
+      e <- read.table(eventFile,sep=',',stringsAsFactors=F,header=T)
+      # calculate date
+      lag <- sub_doy(e[,'DATE'],baseDate)
+      # plot
+      points(lag,e[,'PROP'],type='p',col=pCol,pch=16)
     }
   }
   
   # complete plot
+  par(cPar)
   dev.off()
   
   # done
