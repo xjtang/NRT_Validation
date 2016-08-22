@@ -1,11 +1,11 @@
 # script.R
-# Version 1.1
+# Version 1.3
 # Processing Tools
 #
 # Project: NRT_Compare
 # By xjtang
 # Created On: 5/27/2016
-# Last Update: 8/14/2016
+# Last Update: 8/21/2016
 #
 # Version 1.0 - 5/27/2016
 #   Script created for analysing the reference dataset
@@ -17,6 +17,13 @@
 #   1.Bug fix.
 #   2.Added new function to make plots of group events.
 #   3.Optimized code.
+#
+# Updates of Version 1.3 - 8/21/2016
+#   1.Added new function to make plots of percentiles.
+#   2.Added new function to find start and end of detection time.
+#   3.Improved the look of group plots.
+#   4.Added percent filtering for event plots.
+#   5.Bug fix.
 #
 # -------------------------------------------------------
 
@@ -141,8 +148,8 @@ sum_dates <-function(eventFile,pieceFile,outPath,outFile){
 # gen_plot
 # generate plots for dates analysis
 rPath <- 'I:/NRT/Analysis/Date/CSV/'
-oPath2 <- 'I:/NRT/Analysis/Date/CSV/PNG/'
-gen_plot <- function(eventFile,resultPath,outPath){
+oPath2 <- 'I:/NRT/Analysis/Date/CSV/date_plots/'
+gen_plot <- function(eventFile,resultPath,outPath,s){
   
   # read event file
   events <- read.table(eventFile,sep=',',stringsAsFactors=F,header=T)
@@ -154,6 +161,7 @@ gen_plot <- function(eventFile,resultPath,outPath){
     totalfile <- 0 
     if(file.exists(paste(resultPath,'fu/event_',events[i,'PID'],'.csv',sep=''))){
       r1 <- read.table(paste(resultPath,'fu/event_',events[i,'PID'],'.csv',sep=''),sep=',',stringsAsFactors=F,header=T)
+      r1 <- r1[pct_inc(r1[,'PROP'],s)==1,]
       totalfile <- totalfile+1
     }else{
       r1 <- matrix(0,2,2)
@@ -161,6 +169,7 @@ gen_plot <- function(eventFile,resultPath,outPath){
     }
     if(file.exists(paste(resultPath,'mc/event_',events[i,'PID'],'.csv',sep=''))){
       r2 <- read.table(paste(resultPath,'mc/event_',events[i,'PID'],'.csv',sep=''),sep=',',stringsAsFactors=F,header=T)
+      r2 <- r2[pct_inc(r2[,'PROP'],s)==1,]
       totalfile <- totalfile+1
     }else{
       r2 <- matrix(0,2,2)
@@ -168,6 +177,7 @@ gen_plot <- function(eventFile,resultPath,outPath){
     }
     if(file.exists(paste(resultPath,'ti/event_',events[i,'PID'],'.csv',sep=''))){
       r3 <- read.table(paste(resultPath,'ti/event_',events[i,'PID'],'.csv',sep=''),sep=',',stringsAsFactors=F,header=T)
+      r3 <- r3[pct_inc(r3[,'PROP'],s)==1,]
       totalfile <- totalfile+1
     }else{
       r3 <- matrix(0,2,2)
@@ -246,7 +256,7 @@ gen_plot <- function(eventFile,resultPath,outPath){
 dPath <- 'I:/NRT/Analysis/Date/CSV/'
 oPath3 <- 'I:/NRT/Analysis/Date/CSV/group_plot/'
 data <- read.table(eFile,sep=',',stringsAsFactors=F,header=T)
-grp_plot <- function(d,dataPath,outPath,outName){
+grp_plot <- function(d,dataPath,outPath,outName,s){
   
   # initialize plot
   png(file=paste(outPath,outName,'.png',sep=''),width=2000,height=1500,pointsize=20)
@@ -289,8 +299,10 @@ grp_plot <- function(d,dataPath,outPath,outName){
       e <- read.table(eventFile,sep=',',stringsAsFactors=F,header=T)
       # calculate date
       lag <- sub_doy(e[,'DATE'],baseDate)
+      # data filtering
+      f <- (pct_inc(e[,'PROP'],s)==1)
       # plot
-      points(lag,e[,'PROP'],type='p',col=pCol,pch=16)
+      points(lag[f],e[f,'PROP'],type='p',col=pCol,pch=16)
     }
   }
   
@@ -300,6 +312,82 @@ grp_plot <- function(d,dataPath,outPath,outName){
   
   # done
   return(0)
+}
+
+# pct_hist
+# make histogram of date of percent area detected
+oPath4 <- 'I:/NRT/Analysis/Date/CSV/percent_hist/'
+pct_hist <- function(d,dataPath,outPath,outName,pct){
+  
+  # initialize output
+  r <- matrix(0,nrow(d),3)
+  png(file=paste(outPath,outName,'.png',sep=''),width=2000,height=1500,pointsize=20)
+  cPar <- par(mfrow=c(3,1))
+  
+  # loop through datasets
+  for(i in 1:3){
+    # initialize plot
+    if(i==1){
+      model <- 'Fusion'
+      model2 <- 'fu'
+    }else if(i==2){
+      model <- 'MCCDC'
+      model2 <- 'mc'
+    }else{
+      model <- 'Terra_i'
+      model2 <- 'ti'
+    }
+
+    # loop through events
+    for(j in 1:nrow(d)){
+      # grab info
+      pid <- d[j,'PID']
+      if(d[j,'D_EVENT']>0){
+        baseDate <- d[j,'D_EVENT']
+      }else{
+        baseDate <- d[j,'D_FIRST_NF']
+      }
+      # read file
+      eventFile <- paste(dataPath,model2,'/event_',pid,'.csv',sep='')
+      if(!file.exists(eventFile)){next}
+      e <- read.table(eventFile,sep=',',stringsAsFactors=F,header=T)
+      # calculate date     
+      lag <- sub_doy(e[,'DATE'],baseDate)
+      # find lag time for percentile
+      for(k in 1:nrow(e)){
+        if(e[k,'PROP']>=pct){
+          r[j,i] <- lag[k]
+          break
+        }
+      }
+    }
+    
+    # make hist
+    r[r[,i]>600,i] <- 600
+    r[r[,i]<(-600),i] <- -600
+    hist(r[r[,i]!=0,i],seq(-600,600,20),main=model,xlim=c(-600,600),ylim=c(0,60),xlab='Lag Time')
+    
+  }
+  
+  # complete plot
+  par(cPar)
+  dev.off()
+  
+  # done
+  return(0)
+}
+
+# percent increment
+pct_inc <- function(x,s){
+  c <- 0
+  y <- rep(0,length(x))
+  for(i in 1:length(x)){
+    if(x[i]>=c){
+      y[i] <- 1
+      c <- ceiling(x[i]/s)*s
+    }
+  }
+  return(y)
 }
 
 # substract doy
