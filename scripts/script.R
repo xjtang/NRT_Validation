@@ -255,7 +255,7 @@ gen_plot <- function(eventFile,resultPath,outPath,s){
 # make plots with groups of events
 dPath <- 'I:/NRT/Analysis/Date/CSV/'
 oPath3 <- 'I:/NRT/Analysis/Date/CSV/group_plot/'
-data <- read.table(eFile,sep=',',stringsAsFactors=F,header=T)
+#data <- read.table(eFile,sep=',',stringsAsFactors=F,header=T)
 grp_plot <- function(d,dataPath,outPath,outName,s){
   
   # initialize plot
@@ -375,6 +375,83 @@ pct_hist <- function(d,dataPath,outPath,outName,pct){
   
   # done
   return(0)
+}
+
+# cum_plot
+# cumulated plot
+oPath5 <- 'I:/NRT/Analysis/Date/CSV/cumulated_plot/'
+cum_plot <- function(d,dataPath,outPath,outName,pct){
+  
+  # initialize output
+  r <- matrix(0,nrow(d),3)
+  png(file=paste(outPath,outName,'.png',sep=''),width=2000,height=1500,pointsize=20)
+  cPar <- par(mfrow=c(3,1))
+  
+  # loop through datasets
+  for(i in 1:3){
+    # initialize plot
+    if(i==1){
+      model <- 'Fusion'
+      model2 <- 'fu'
+    }else if(i==2){
+      model <- 'MCCDC'
+      model2 <- 'mc'
+    }else{
+      model <- 'Terra_i'
+      model2 <- 'ti'
+    }
+    
+    # loop through events
+    for(j in 1:nrow(d)){
+      # grab info
+      pid <- d[j,'PID']
+      if(d[j,'D_EVENT']>0){
+        baseDate <- d[j,'D_EVENT']
+      }else{
+        baseDate <- d[j,'D_FIRST_NF']
+      }
+      # read file
+      eventFile <- paste(dataPath,model2,'/event_',pid,'.csv',sep='')
+      if(!file.exists(eventFile)){next}
+      e <- read.table(eventFile,sep=',',stringsAsFactors=F,header=T)
+      # calculate date     
+      lag <- sub_doy(e[,'DATE'],baseDate)
+      # find lag time for percentile
+      for(k in 1:nrow(e)){
+        if(e[k,'PROP']>=pct){
+          r[j,i] <- lag[k]
+          break
+        }
+      }
+    }
+    
+    # make hist
+    r[r[,i]>600,i] <- 600
+    r[r[,i]<(-600),i] <- -600
+    hist(r[r[,i]!=0,i],seq(-600,600,20),main=model,xlim=c(-600,600),ylim=c(0,60),xlab='Lag Time')
+    
+  }
+  
+  # complete plot
+  par(cPar)
+  dev.off()
+  
+  # done
+  return(0)
+}
+
+# find duplicate
+find_dup <- function(x){
+  y <- rep(0,length(x))
+  for(i in 1:length(x)){
+    if(sum(x==x[i])>1){
+      if(y[i]==0){
+        y[x==x[i]] <- 1
+        y[i] <- 0
+      }
+    }
+  }
+  return(y)
 }
 
 # percent increment
