@@ -5,7 +5,7 @@
 # Project: NRT_Compare
 # By xjtang
 # Created On: 5/27/2016
-# Last Update: 8/28/2016
+# Last Update: 9/11/2016
 #
 # Version 1.0 - 5/27/2016
 #   Script created for analysing the reference dataset
@@ -18,7 +18,7 @@
 #   2.Added new function to make plots of group events.
 #   3.Optimized code.
 #
-# Updates of Version 1.3 - 8/28/2016
+# Updates of Version 1.3 - 9/11/2016
 #   1.Added new function to make plots of percentiles.
 #   2.Added new function to find start and end of detection time.
 #   3.Improved the look of group plots.
@@ -34,6 +34,9 @@ library(png)
 
 # conf_mat
 # create confusion matrix
+mPath <- 'D:/Users/HotDog/Documents/Dropbox/'
+eFile <- paste(mPath,'NRT/Analysis/event_join2.csv',sep='')
+oFile <- paste(mPath,'NRT/Analysis/ti_conf.csv',sep='')
 conf_mat <- function(file,res,ref,output){
   
   # read table
@@ -64,10 +67,10 @@ conf_mat <- function(file,res,ref,output){
 
 # sum_dates
 # summarize date information
-eFile <- 'I:/NRT/Analysis/Date/CSV/event_join.csv'
-pFile <- 'I:/NRT/Analysis/Date/CSV/mc.csv'
-oPath <- 'I:/NRT/Analysis/Date/CSV/mc/'
-oFile <- 'I:/NRT/Analysis/Date/CSV/mc_result.csv'
+eFile2 <- paste(mPath,'NRT/Analysis/event_join.csv',sep='')
+pFile <- paste(mPath,'NRT/Analysis/mc.csv',sep='')
+oPath <- paste(mPath,'NRT/Analysis/mc/',sep='')
+oFile2 <- paste(mPath,'NRT/Analysis/mc_result.csv',sep='')
 sum_dates <-function(eventFile,pieceFile,outPath,outFile){
   
   # read input file
@@ -149,8 +152,8 @@ sum_dates <-function(eventFile,pieceFile,outPath,outFile){
 
 # gen_plot
 # generate plots for dates analysis
-rPath <- 'I:/NRT/Analysis/Date/CSV/'
-oPath2 <- 'I:/NRT/Analysis/Date/CSV/date_plots/'
+rPath <- paste(mPath,'NRT/Analysis/',sep='')
+oPath2 <- paste(mPath,'NRT/Analysis/date_plots/',sep='')
 gen_plot <- function(eventFile,resultPath,outPath,s){
   
   # read event file
@@ -261,9 +264,9 @@ gen_plot <- function(eventFile,resultPath,outPath,s){
 
 # grp_plot
 # make plots with groups of events
-dPath <- 'I:/NRT/Analysis/Date/CSV/'
-oPath3 <- 'I:/NRT/Analysis/Date/CSV/group_plot/'
-data <- read.table(eFile,sep=',',stringsAsFactors=F,header=T)
+dPath <- paste(mPath,'NRT/Analysis/',sep='')
+oPath3 <- paste(mPath,'NRT/Analysis/group_plot/',sep='')
+data <- read.table(eFile2,sep=',',stringsAsFactors=F,header=T)
 grp_plot <- function(d,dataPath,outPath,outName,s){
   
   # initialize plot
@@ -329,7 +332,7 @@ grp_plot <- function(d,dataPath,outPath,outName,s){
 
 # pct_hist
 # make histogram of date of percent area detected
-oPath4 <- 'I:/NRT/Analysis/Date/CSV/percent_hist/'
+oPath4 <- paste(mPath,'NRT/Analysis/percent_hist/',sep='')
 pct_hist <- function(d,dataPath,outPath,outName,pct){
   
   # initialize output
@@ -400,6 +403,8 @@ gen_den <- function(d,dataPath,pct,model,size){
     d <- d[d[,'AREA2']>=size[1],]
     d <- d[d[,'AREA2']<=size[2],]
   }
+  d <- d[(d[,'D_FIRST_NF']>=2013000)|(d[,'D_EVENT']>=2013000),]
+  cat(paste('Total number of events: ',nrow(d),'\n',sep=''))
   r <- rep(9999,nrow(d))
     
   # loop through events
@@ -413,7 +418,10 @@ gen_den <- function(d,dataPath,pct,model,size){
     }
     # read file
     eventFile <- paste(dataPath,model,'/event_',pid,'.csv',sep='')
-    if(!file.exists(eventFile)){next}
+    if(!file.exists(eventFile)){
+      # cat(paste(pid,' file not exist.\n',sep=''))
+      next
+    }
     e <- read.table(eventFile,sep=',',stringsAsFactors=F,header=T)
     # calculate date     
     lag <- sub_doy(e[,'DATE'],baseDate)
@@ -424,6 +432,9 @@ gen_den <- function(d,dataPath,pct,model,size){
         break
       }
     }
+    if(r[i]==9999){
+      # cat(paste(pid,' never reach goal.\n',sep=''))
+    }
   }
   
   # done
@@ -432,44 +443,46 @@ gen_den <- function(d,dataPath,pct,model,size){
 
 # den_plot
 # plot density
-oPath5 <- 'I:/NRT/Analysis/Date/CSV/cumulated_plot/'
+oPath5 <- paste(mPath,'NRT/Analysis/cumulated_plot/',sep='')
 den_plot <- function(outPath){
   
   # all events three models
-  png(file=paste(outPath,'allsize_bymodel_50pct.png',sep=''),width=2000,height=1500,pointsize=20)
-  plot(0,-1,main='Density Plot',ylab='Density',xlab='Lag Time',xlim=c(-100,600),ylim=c(0,1))
-  a <- gen_den(data,dPath,0.5,'fu',0)
+  png(file=paste(outPath,'allsize_bymodel_10pct.png',sep=''),width=1000,height=750,pointsize=20)
+  plot(0,-1,main='Density Plot',ylab='Density',xlab='Lag Time',xlim=c(-100,400),ylim=c(0,1))
+  a <- gen_den(data,dPath,0.1,'fu',0)
   lines(a[,1],a[,2],col='red')
-  a <- gen_den(data,dPath,0.5,'mc',0)
+  a <- gen_den(data,dPath,0.1,'mc',0)
   lines(a[,1],a[,2],col='blue')
-  a <- gen_den(data,dPath,0.5,'ti',0)
+  a <- gen_den(data,dPath,0.1,'ti',0)
   lines(a[,1],a[,2],col='green')
   dev.off()
   
   # all events 5 percentile
-  png(file=paste(outPath,'allsize_ti_bypct.png',sep=''),width=2000,height=1500,pointsize=20)
-  plot(0,-1,main='Density Plot',ylab='Density',xlab='Lag Time',xlim=c(-100,600),ylim=c(0,1))
-  a <- gen_den(data,dPath,0.1,'ti',0)
-  lines(a[,1],a[,2])
-  a <- gen_den(data,dPath,0.2,'ti',0)
-  lines(a[,1],a[,2])
-  a <- gen_den(data,dPath,0.3,'ti',0)
-  lines(a[,1],a[,2])
-  a <- gen_den(data,dPath,0.5,'ti',0)
-  lines(a[,1],a[,2])
-  a <- gen_den(data,dPath,0.7,'ti',0)
-  lines(a[,1],a[,2])
-  dev.off()
+  # png(file=paste(outPath,'allsize_fu_bypct.png',sep=''),width=2000,height=1500,pointsize=20)
+  # plot(0,-1,main='Density Plot',ylab='Density',xlab='Lag Time',xlim=c(-100,400),ylim=c(0,1))
+  # a <- gen_den(data,dPath,0.1,'fu',0)
+  # lines(a[,1],a[,2])
+  # a <- gen_den(data,dPath,0.2,'fu',0)
+  # lines(a[,1],a[,2])
+  # a <- gen_den(data,dPath,0.3,'fu',0)
+  # lines(a[,1],a[,2])
+  # a <- gen_den(data,dPath,0.5,'fu',0)
+  # lines(a[,1],a[,2])
+  # a <- gen_den(data,dPath,0.7,'fu',0)
+  # lines(a[,1],a[,2])
+  # dev.off()
   
-  # all events three sizes
-  png(file=paste(outPath,'bysize_ti_10pct.png',sep=''),width=2000,height=1500,pointsize=20)
-  plot(0,-1,main='Density Plot',ylab='Density',xlab='Lag Time',xlim=c(-100,600),ylim=c(0,1))
-  a <- gen_den(data,dPath,0.1,'ti',c(0,5*250*250))
-  lines(a[,1],a[,2],col='green')
-  a <- gen_den(data,dPath,0.1,'ti',c(5*250*250,25*250*250))
+  # all events 4 sizes
+  png(file=paste(outPath,'bysize_ti_10pct.png',sep=''),width=1000,height=750,pointsize=20)
+  plot(0,-1,main='Density Plot',ylab='Density',xlab='Lag Time',xlim=c(-100,400),ylim=c(0,1))
+  a <- gen_den(data,dPath,0.1,'ti',c(0,3*250*250))
+  lines(a[,1],a[,2],col='red')
+  a <- gen_den(data,dPath,0.1,'ti',c(3*250*250,10*250*250))
+  lines(a[,1],a[,2],col='purple')
+  a <- gen_den(data,dPath,0.1,'ti',c(10*250*250,25*250*250))
   lines(a[,1],a[,2],col='blue')
   a <- gen_den(data,dPath,0.1,'ti',c(25*250*250,1000*250*250))
-  lines(a[,1],a[,2],col='red')
+  lines(a[,1],a[,2],col='green')
   dev.off()
   
   return(0)
