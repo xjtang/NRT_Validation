@@ -5,9 +5,9 @@
 # Project: NRT_Compare
 # By xjtang
 # Created On: 12/5/2016
-# Last Update: 12/11/2016
+# Last Update: 12/12/2016
 #
-# Version 1.0 - 12/5/2016
+# Version 1.0 - 12/12/2016
 #   Calculate accuracy when map is different from stratification
 #
 # -------------------------------------------------------
@@ -17,8 +17,8 @@
 AA <- function(sta,ref){
 
   # read input data
-  sta2 <- table.read(sta,sep=',',stringsAsFactors=F)
-  ref2 <- table.read(ref,sep=',',stringsAsFactors=F,header=T)
+  sta2 <- read.table(sta,sep=',',stringsAsFactors=F)
+  ref2 <- read.table(ref,sep=',',stringsAsFactors=F,header=T)
 
   # get information
   mapCls <- unique(ref2[,'MAP'])
@@ -46,7 +46,7 @@ AA <- function(sta,ref){
     x_User[i,] <- (mapCls==ref2[i,'MAP'])
     y_Prod[i,] <- (ref2[i,'MAP']==ref2[i,'REF'])&(mapCls==ref2[i,'REF'])
     x_Prod[i,] <- (mapCls==ref2[i,'REF'])
-    y_Err[which(mapCls==ref2[i,'MAP']),which(mapCls==ref2[i,'REF'])] <- 1
+    y_Err[which(mapCls==ref2[i,'MAP']),which(mapCls==ref2[i,'REF']),i] <- 1
   }
 
   # initialize coefficient means
