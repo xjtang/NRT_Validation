@@ -5,9 +5,9 @@
 # Project: NRT_Compare
 # By xjtang
 # Created On: 12/5/2016
-# Last Update: 12/12/2016
+# Last Update: 12/18/2016
 #
-# Version 1.0 - 12/12/2016
+# Version 1.0 - 12/18/2016
 #   Calculate accuracy when map is different from stratification
 #
 # -------------------------------------------------------
@@ -21,7 +21,7 @@ AA <- function(sta,ref){
   ref2 <- read.table(ref,sep=',',stringsAsFactors=F,header=T)
 
   # get information
-  mapCls <- unique(ref2[,'MAP'])
+  mapCls <- sort(unique(ref2[,'MAP']))
   staCls <- sta2[,1]
   staCnt <- sta2[,2]
   n <- sum(staCnt)
@@ -30,42 +30,42 @@ AA <- function(sta,ref){
   nRef <- nrow(ref2)
 
   # initialize coefficients
-  y_Area <- matrix(0,nRef,nClass)
   y_All <- rep(0,nRef)
   y_User <- matrix(0,nRef,nClass)
   x_User <- matrix(0,nRef,nClass)
   y_Prod <- matrix(0,nRef,nClass)
   x_Prod <- matrix(0,nRef,nClass)
+  y_Area <- matrix(0,nRef,nClass)
   y_Err <- array(0,c(nClass,nClass,nRef))
 
   # calculation coefficients
   for(i in 1:nRef){
-    y_Area[i,] <- (mapCls==ref2[i,'REF'])
     y_All[i] <- (ref2[i,'MAP']==ref2[i,'REF'])
     y_User[i,] <- (ref2[i,'MAP']==ref2[i,'REF'])&(mapCls==ref2[i,'MAP'])
     x_User[i,] <- (mapCls==ref2[i,'MAP'])
     y_Prod[i,] <- (ref2[i,'MAP']==ref2[i,'REF'])&(mapCls==ref2[i,'REF'])
     x_Prod[i,] <- (mapCls==ref2[i,'REF'])
+    y_Area[i,] <- (mapCls==ref2[i,'REF'])
     y_Err[which(mapCls==ref2[i,'MAP']),which(mapCls==ref2[i,'REF']),i] <- 1
   }
 
   # initialize coefficient means
-  yh_Area <- matrix(0,nClass,nStra)
   yh_All <- rep(0,nStra)
   yh_User <- matrix(0,nClass,nStra)
   xh_User <- matrix(0,nClass,nStra)
   yh_Prod <- matrix(0,nClass,nStra)
   xh_Prod <- matrix(0,nClass,nStra)
+  yh_Area <- matrix(0,nClass,nStra)
   yh_Err <- array(0,c(nClass,nClass,nStra))
 
   # calculate coefficients means
   for(i in 1:nStra){
-    yh_Area[,i] <- colMeans(y_Area[ref2[,'STA']==staCls[i],])
     yh_All[i] <- mean(y_All[ref2[,'STA']==staCls[i]])
     yh_User[,i] <- colMeans(y_User[ref2[,'STA']==staCls[i],])
     xh_User[,i] <- colMeans(x_User[ref2[,'STA']==staCls[i],])
     yh_Prod[,i] <- colMeans(y_Prod[ref2[,'STA']==staCls[i],])
     xh_Prod[,i] <- colMeans(x_Prod[ref2[,'STA']==staCls[i],])
+    yh_Area[,i] <- colMeans(y_Area[ref2[,'STA']==staCls[i],])
     yh_Err[,,i] <- apply(y_Err[,,ref2[,'STA']==staCls[i]],c(1,2),mean)
   }
 
@@ -98,7 +98,7 @@ AA <- function(sta,ref){
   print(area)
   print('Confusion Matrix: ')
   print(conf)
-  
+
   # done
   return(0)
 
