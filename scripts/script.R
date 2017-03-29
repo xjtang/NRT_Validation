@@ -72,7 +72,7 @@ conf_mat <- function(file,res,ref,output){
 
 # sum_dates
 # summarize date information
-eFile2 <- paste(mPath,'NRT/Analysis/event_join.csv',sep='')
+eFile2 <- paste(mPath,'NRT/Analysis/event_join3.csv',sep='')
 pFile <- paste(mPath,'NRT/Analysis/mc.csv',sep='')
 oPath <- paste(mPath,'NRT/Analysis/mc/',sep='')
 oFile2 <- paste(mPath,'NRT/Analysis/mc_result.csv',sep='')
