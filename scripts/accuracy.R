@@ -103,3 +103,63 @@ AA <- function(sta,ref){
   return(0)
 
 }
+
+
+mPath <- 'D:/Users/HotDog/Documents/Dropbox/'
+strata <- paste(mPath,'NRT/Analysis/accuracy2/strata.csv',sep='')
+sFile <- paste(mPath,'VNRT/analysis/date/event_join4.csv',sep='')
+eFile <- paste(mPath,'VNRT/analysis/observation/event_join4.csv',sep='')
+oPath <- paste(mPath,'NRT/Analysis/accuracy2/date',sep='')
+oFile <- paste(mPath,'NRT/Analysis/accuracy2/fu_date_result.csv',sep='')
+dPath <- paste(mPath,'NRT/Analysis/',sep='')
+events <- read.table(eFile,sep=',',stringsAsFactors=F,header=T)
+samples <- read.table(sFile,sep=',',stringsAsFactors=F,header=T)
+
+
+cal_detect_rate <- function(d,dataPath,pct,model,size){
+  
+  # initialize output
+  d <- d[find_dup(d[,'AREA2'])==0,]
+  if(length(size)==2){
+    d <- d[d[,'AREA2']>=size[1],]
+    d <- d[d[,'AREA2']<=size[2],]
+  }
+  d <- d[(d[,'D_FIRST_NF']>=2013000)|(d[,'D_EVENT']>=2013000),]
+  cat(paste('Total number of events: ',nrow(d),'\n',sep=''))
+  r <- rep(9999,nrow(d))
+  
+  # loop through events
+  for(i in 1:nrow(d)){
+    # grab info
+    pid <- d[i,'PID']
+    if(d[i,'D_EVENT']>0){
+      baseDate <- d[i,'D_EVENT']
+    }else{
+      baseDate <- d[i,'D_FIRST_NF']
+    }
+    # read file
+    eventFile <- paste(dataPath,model,'/event_',pid,'.csv',sep='')
+    if(!file.exists(eventFile)){
+      # cat(paste(pid,' file not exist.\n',sep=''))
+      next
+    }
+    e <- read.table(eventFile,sep=',',stringsAsFactors=F,header=T)
+    # calculate date
+    lag <- sub_doy(e[,'DATE'],baseDate)
+    # find lag time for percentile
+    for(k in 1:nrow(e)){
+      if(e[k,'PROP']>=pct){
+        r[i] <- lag[k]
+        break
+      }
+    }
+    if(r[i]==9999){
+      # cat(paste(pid,' never reach goal.\n',sep=''))
+    }
+  }
+  
+  # done
+  return(cal_den(r))
+}
+
+
