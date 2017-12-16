@@ -39,7 +39,7 @@ library(png)
 
 # conf_mat
 # create confusion matrix
-mPath <- 'D:/Users/HotDog/Documents/Dropbox/'
+mPath <- '/Users/xjtang/Applications/Dropbox/'
 eFile <- paste(mPath,'NRT/Analysis/event_join2.csv',sep='')
 oFile <- paste(mPath,'NRT/Analysis/ti_conf.csv',sep='')
 conf_mat <- function(file,res,ref,output){
@@ -163,7 +163,8 @@ plot_alert_pct <- function(eventFile,resultPath,outPath,s){
 
   # read event file
   events <- read.table(eventFile,sep=',',stringsAsFactors=F,header=T)
-
+  lwidth <- 6
+  
   # loop through all events
   for(i in 1:nrow(events)){
 
@@ -202,60 +203,63 @@ plot_alert_pct <- function(eventFile,resultPath,outPath,s){
     if(totalfile==0){next}
 
     # initialize plot file
-    png(file=paste(outPath,'event_',events[i,'PID'],'.png',sep=''),width=2000,height=1500,pointsize=20)
+    png(file=paste(outPath,'event_',events[i,'PID'],'.png',sep=''),width=2000,height=2400,pointsize=20)
     cPar <- par(mfrow=c(3,1))
 
     # make plot
     x <- doy2dy(r1[,'DATE'])
     plot(x,r1[,'PROP'],type='l',col='black',pch=16,
          main='Fusion',ylab='Alert Percentage',xlab='Date of Detection',
-         xlim=c(2013,2016),ylim=c(0,1),xaxt='n'
+         xlim=c(2013,2016),ylim=c(0,1),xaxt='n',bty='n',lwd=lwidth
     )
+    box(col='black',lwd=2)
     axis(1,at=c(2013,2014,2015,2016))
     if(events[i,'D_EVENT']>0){
-      abline(v=doy2dy(events[i,'D_EVENT']),col='red')
+      abline(v=doy2dy(events[i,'D_EVENT']),col='red',lwd=lwidth)
     }else{
-      abline(v=doy2dy(events[i,'D_FIRST_NF']),col='red')
+      abline(v=doy2dy(events[i,'D_FIRST_NF']),col='red',lwd=lwidth)
     }
     if(events[i,'D_CLEAR']>0){
-      abline(v=doy2dy(events[i,'D_CLEAR']),col='blue')
+      abline(v=doy2dy(events[i,'D_CLEAR']),col='blue',lwd=lwidth)
     }
     if(events[i,'D_EXPAND']>0){
-      abline(v=doy2dy(events[i,'D_EXPAND']),col='green')
+      abline(v=doy2dy(events[i,'D_EXPAND']),col='green',lwd=lwidth)
     }
     x <- doy2dy(r2[,'DATE'])
     plot(x,r2[,'PROP'],type='l',col='black',pch=16,
          main='MCCDC',ylab='Alert Percentage',xlab='Date of Detection',
-         xlim=c(2013,2016),ylim=c(0,1),xaxt='n'
+         xlim=c(2013,2016),ylim=c(0,1),xaxt='n',bty='n',lwd=lwidth
     )
+    box(col='black',lwd=2)
     axis(1,at=c(2013,2014,2015,2016))
     if(events[i,'D_EVENT']>0){
-      abline(v=doy2dy(events[i,'D_EVENT']),col='red')
+      abline(v=doy2dy(events[i,'D_EVENT']),col='red',lwd=lwidth)
     }else{
-      abline(v=doy2dy(events[i,'D_FIRST_NF']),col='red')
+      abline(v=doy2dy(events[i,'D_FIRST_NF']),col='red',lwd=lwidth)
     }
     if(events[i,'D_CLEAR']>0){
-      abline(v=doy2dy(events[i,'D_CLEAR']),col='blue')
+      abline(v=doy2dy(events[i,'D_CLEAR']),col='blue',lwd=lwidth)
     }
     if(events[i,'D_EXPAND']>0){
-      abline(v=doy2dy(events[i,'D_EXPAND']),col='green')
+      abline(v=doy2dy(events[i,'D_EXPAND']),col='green',lwd=lwidth)
     }
     x <- doy2dy(r3[,'DATE'])
     plot(x,r3[,'PROP'],type='l',col='black',pch=16,
          main='Terra-i',ylab='Alert Percentage',xlab='Date of Detection',
-         xlim=c(2013,2016),ylim=c(0,1),xaxt='n'
+         xlim=c(2013,2016),ylim=c(0,1),xaxt='n',bty='n',lwd=lwidth
     )
+    box(col='black',lwd=2)
     axis(1,at=c(2013,2014,2015,2016))
     if(events[i,'D_EVENT']>0){
-      abline(v=doy2dy(events[i,'D_EVENT']),col='red')
+      abline(v=doy2dy(events[i,'D_EVENT']),col='red',lwd=lwidth)
     }else{
-      abline(v=doy2dy(events[i,'D_FIRST_NF']),col='red')
+      abline(v=doy2dy(events[i,'D_FIRST_NF']),col='red',lwd=lwidth)
     }
     if(events[i,'D_CLEAR']>0){
-      abline(v=doy2dy(events[i,'D_CLEAR']),col='blue')
+      abline(v=doy2dy(events[i,'D_CLEAR']),col='blue',lwd=lwidth)
     }
     if(events[i,'D_EXPAND']>0){
-      abline(v=doy2dy(events[i,'D_EXPAND']),col='green')
+      abline(v=doy2dy(events[i,'D_EXPAND']),col='green',lwd=lwidth)
     }
 
     # close plot
@@ -275,8 +279,9 @@ data <- read.table(eFile2,sep=',',stringsAsFactors=F,header=T)
 alert_pct_grp <- function(d,dataPath,outPath,outName,s){
 
   # initialize plot
-  png(file=paste(outPath,outName,'.png',sep=''),width=2000,height=1500,pointsize=20)
+  png(file=paste(outPath,outName,'.png',sep=''),width=2000,height=2400,pointsize=20)
   cPar <- par(mfrow=c(3,1))
+  lwidth <- 1
 
   # loop through datasets
   for(i in 1:3){
@@ -292,7 +297,8 @@ alert_pct_grp <- function(d,dataPath,outPath,outName,s){
       model2 <- 'ti'
     }
     plot(0,-1,main=model,ylab='Alert Percentage',xlab='Lag Time',
-         xlim=c(-600,600),ylim=c(0,1))
+         xlim=c(-400,400),ylim=c(0,1),bty='n')
+    box(col='black',lwd=2)
     # loop through events
     for(j in 1:nrow(d)){
       # grab info
@@ -318,9 +324,9 @@ alert_pct_grp <- function(d,dataPath,outPath,outName,s){
       # data filtering
       if(s>0){
         f <- (pct_inc(e[,'PROP'],s)==1)
-        points(lag[f],e[f,'PROP'],type='l',col=pCol,pch=16)
+        points(lag[f],e[f,'PROP'],type='l',col=pCol,pch=16,lwd=lwidth)
       }else{
-        points(lag,e[,'PROP'],type='l',col=pCol,pch=16)
+        points(lag,e[,'PROP'],type='l',col=pCol,pch=16,lwd=lwidth)
       }
       # plot
 
@@ -449,46 +455,57 @@ cal_detect_rate <- function(d,dataPath,pct,model,size){
 # plot_detect_rate
 # plot detection rate as a function of lag time
 oPath5 <- paste(mPath,'NRT/Analysis/detect_rate/',sep='')
-plot_detect_rate <- function(outPath){
-
+plot_detect_rate <- function(outPath,md='fu'){
+  
+  # all events three models
+  png(file=paste(outPath,'all_bymodel.png',sep=''),width=1000,height=1000,pointsize=20)
+  plot(0,-1,main='Detection Rate',ylab='Detection Rate',xlab='Lag Time',xlim=c(-50,200),ylim=c(0,1))
+  a <- cal_detect_rate(data,dPath,0.1,'fu',0)
+  lines(a[,1],a[,2],col='red',lwd=3)
+  a <- cal_detect_rate(data,dPath,0.1,'mc',0)
+  lines(a[,1],a[,2],col='blue',lwd=3)
+  a <- cal_detect_rate(data,dPath,0.1,'ti',0)
+  lines(a[,1],a[,2],col='green',lwd=3)
+  dev.off()
+  
+  
   # all events three sites 
-  png(file=paste(outPath,'allsize_bysite_ti.png',sep=''),width=1000,height=750,pointsize=20)
-  plot(0,-1,main='Detection Rate',ylab='Detection Rate',xlab='Lag Time',xlim=c(-100,400),ylim=c(0,1))
-  a <- cal_detect_rate(data[data[,'SCENE']=='P227R065',],dPath,0.1,'ti',0)
-  lines(a[,1],a[,2],col='red')
-  a <- cal_detect_rate(data[data[,'SCENE']=='P232R066',],dPath,0.1,'ti',0)
-  lines(a[,1],a[,2],col='blue')
-  a <- cal_detect_rate(data[data[,'SCENE']=='P007R059',],dPath,0.1,'ti',0)
-  lines(a[,1],a[,2],col='green')
+  png(file=paste(outPath,'all_bysite_',md,'.png',sep=''),width=1000,height=1000,pointsize=20)
+  plot(0,-1,main='Detection Rate',ylab='Detection Rate',xlab='Lag Time',xlim=c(-50,200),ylim=c(0,1))
+  a <- cal_detect_rate(data[data[,'SCENE']=='P227R065',],dPath,0.1,md,0)
+  lines(a[,1],a[,2],col='red',lwd=2)
+  a <- cal_detect_rate(data[data[,'SCENE']=='P232R066',],dPath,0.1,md,0)
+  lines(a[,1],a[,2],col='blue',lwd=2)
+  a <- cal_detect_rate(data[data[,'SCENE']=='P007R059',],dPath,0.1,md,0)
+  lines(a[,1],a[,2],col='green',lwd=2)
   dev.off()
 
   # all events 5 percentile
-  # png(file=paste(outPath,'allsize_fu_bypct.png',sep=''),width=2000,height=1500,pointsize=20)
-  # plot(0,-1,main='Detection Rate',ylab='Detection Rate',xlab='Lag Time',xlim=c(-100,400),ylim=c(0,1))
-  # a <- gen_den(data,dPath,0.1,'fu',0)
-  # lines(a[,1],a[,2])
-  # a <- gen_den(data,dPath,0.2,'fu',0)
-  # lines(a[,1],a[,2])
-  # a <- gen_den(data,dPath,0.3,'fu',0)
-  # lines(a[,1],a[,2])
-  # a <- gen_den(data,dPath,0.5,'fu',0)
-  # lines(a[,1],a[,2])
-  # a <- gen_den(data,dPath,0.7,'fu',0)
-  # lines(a[,1],a[,2])
-  # dev.off()
+  png(file=paste(outPath,'all_bypct.png',sep=''),width=1000,height=1000,pointsize=20)
+  plot(0,-1,main='Detection Rate',ylab='Detection Rate',xlab='Lag Time',xlim=c(-50,200),ylim=c(0,1))
+  a <- cal_detect_rate(data,dPath,0.05,'fu',0)
+  lines(a[,1],a[,2],lwd=2)
+  a <- cal_detect_rate(data,dPath,0.1,'fu',0)
+  lines(a[,1],a[,2],lwd=2)
+  a <- cal_detect_rate(data,dPath,0.2,'fu',0)
+  lines(a[,1],a[,2],lwd=2)
+  a <- cal_detect_rate(data,dPath,0.3,'fu',0)
+  lines(a[,1],a[,2],lwd=2)
+  a <- cal_detect_rate(data,dPath,0.5,'fu',0)
+  lines(a[,1],a[,2],lwd=2)
+  dev.off()
 
-  # all events 4 sizes
-  # png(file=paste(outPath,'bysize_ti_10pct.png',sep=''),width=1000,height=750,pointsize=20)
-  # plot(0,-1,main='Detection Rate',ylab='Detection Rate',xlab='Lag Time',xlim=c(-100,400),ylim=c(0,1))
-  # a <- cal_detect_rate(data,dPath,0.1,'ti',c(0,3*250*250))
-  # lines(a[,1],a[,2],col='red')
-  # a <- cal_detect_rate(data,dPath,0.1,'ti',c(3*250*250,10*250*250))
-  # lines(a[,1],a[,2],col='purple')
-  # a <- cal_detect_rate(data,dPath,0.1,'ti',c(10*250*250,25*250*250))
-  # lines(a[,1],a[,2],col='blue')
-  # a <- cal_detect_rate(data,dPath,0.1,'ti',c(25*250*250,1000*250*250))
-  # lines(a[,1],a[,2],col='green')
-  # dev.off()
+  # all events 3 sizes
+  mps <- 231.656
+  png(file=paste(outPath,'all_bysize_',md,'.png',sep=''),width=1000,height=1000,pointsize=20)
+  plot(0,-1,main='Detection Rate',ylab='Detection Rate',xlab='Lag Time',xlim=c(-50,200),ylim=c(0,1))
+  a <- cal_detect_rate(data,dPath,0.1,md,c(0,3*mps*mps))
+  lines(a[,1],a[,2],col='green',lwd=2)
+  a <- cal_detect_rate(data,dPath,0.1,md,c(3*mps*mps,15*mps*mps))
+  lines(a[,1],a[,2],col='blue',lwd=2)
+  a <- cal_detect_rate(data,dPath,0.1,md,c(15*mps*mps,1000*mps*mps))
+  lines(a[,1],a[,2],col='red',lwd=2)
+  dev.off()
 
   # done
   return(0)
@@ -548,15 +565,15 @@ rate_size <- function(d,dataPath,lt,pct,model){
 oPath6 <- paste(mPath,'NRT/Analysis/event_size/',sep='')
 plot_rate_size <- function(outPath,lt,pct){
   # make plot
-  png(file=paste(outPath,'rate_size.png',sep=''),width=2000,height=1500,pointsize=20)
+  png(file=paste(outPath,'rate_size.png',sep=''),width=1000,height=1000,pointsize=20)
   plot(0,-1,main='Detection Rate / Event Size',
-       ylab='Detection Rate',xlab='Event Size (ha)',xlim=c(0,200),ylim=c(0,1))
+       ylab='Detection Rate',xlab='Event Size (ha)',xlim=c(0,150),ylim=c(0,1))
   a <- rate_size(data,dPath,lt,pct,'fu')
-  lines(a[,1]/(100*100),a[,2],col='red')
+  lines(a[,1]/(100*100),a[,2],col='red',lwd=3)
   a <- rate_size(data,dPath,lt,pct,'mc')
-  lines(a[,1]/(100*100),a[,2],col='blue')
+  lines(a[,1]/(100*100),a[,2],col='blue',lwd=3)
   a <- rate_size(data,dPath,lt,pct,'ti')
-  lines(a[,1]/(100*100),a[,2],col='green')
+  lines(a[,1]/(100*100),a[,2],col='green',lwd=3)
   dev.off()
 }
 
