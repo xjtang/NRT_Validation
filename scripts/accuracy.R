@@ -16,7 +16,9 @@
 # calclate accuracy
 mPath <- '/Users/xjtang/Applications/Dropbox/'
 sfile <- paste(mPath,'NRT/Analysis/accuracy/strata.csv',sep='')
-rFile <- paste(mPath,'NRT/Analysis/accuracy/mc.csv',sep='')
+sfile2 <- paste(mPath,'NRT/review2/accuracy/strata2.csv',sep='')
+rFile <- paste(mPath,'NRT/review2/accuracy/fu2.csv',sep='')
+rFile2 <- paste(mPath,'NRT/Analysis/accuracy/fu.csv',sep='')
 testS <- paste(mPath,'NRT/Analysis/accuracy/test_strata.csv',sep='')
 testR <- paste(mPath,'NRT/Analysis/accuracy/test_ref.csv',sep='')
 AA <- function(sta,ref,verbose=T){
@@ -175,11 +177,12 @@ AA <- function(sta,ref,verbose=T){
 
 }
 
-strata <- paste(mPath,'NRT/Analysis/accuracy2/strata.csv',sep='')
-sFile <- paste(mPath,'NRT/Analysis/accuracy2/all.csv',sep='')
-eFile <- paste(mPath,'NRT/Analysis/accuracy2/events.csv',sep='')
-oPath <- paste(mPath,'NRT/Analysis/accuracy2/date/',sep='')
-oPath <- paste(mPath,'NRT/Analysis/accuracy2/nob/',sep='')
+strata <- paste(mPath,'NRT/review2/accuracy/strata.csv',sep='')
+sFile <- paste(mPath,'NRT/review2/accuracy/all3.csv',sep='')
+eFile <- paste(mPath,'NRT/review2/accuracy/samples.csv',sep='')
+oPath <- paste(mPath,'NRT/review2/accuracy/',sep='')
+oPath2 <- paste(mPath,'NRT/Analysis/accuracy2/nob/',sep='')
+oPath3 <- paste(mPath,'NRT/Post_stratify/',sep='')
 dPath <- paste(mPath,'NRT/Analysis/',sep='')
 dPath2 <- paste(mPath,'NRT/Analysis/observation/',sep='')
 events <- read.table(eFile,sep=',',stringsAsFactors=F,header=T)
@@ -211,7 +214,7 @@ cal_accuracy <- function(d,dataPath,pct,model,size,samples,sta,m,alpha=-1){
   samples$MAP <- 0
   r <- cbind(r,rep(0,nrow(r)),rep(0,nrow(r)),rep(0,nrow(r)))
   
-  #samples[(samples[,'STA']==alpha)&(samples[,'REF']==1),'MAP'] <- 1
+  samples[(samples[,'STA']==alpha)&(samples[,'REF']==1),'MAP'] <- 1
   
   for(i in 1:nrow(r)){
     lags2 <- lags[lags[,2]<=r[i,1],,drop=F]
@@ -369,7 +372,7 @@ plot_event <- function(outPath){
 plot_detect_rate <- function(outPath){
   
   # all events three sites 
-  png(file=paste(outPath,'test.png',sep=''),width=1000,height=1000,pointsize=20)
+  png(file=paste(outPath,'test3.png',sep=''),width=1000,height=1000,pointsize=20)
   plot(0,-1,main='Detection Rate',ylab='Detection Rate',xlab='Lag Time',xlim=c(-50,200),ylim=c(0,1),lwd=8,bty='n')
   a <- cal_accuracy(events,dPath,0.1,'fu',0,samples,strata,'lag')
   #a2 <- cal_accuracy(events,dPath,0.05,'fu',0,samples,strata,'lag')
@@ -377,32 +380,29 @@ plot_detect_rate <- function(outPath){
   #a4 <- cal_accuracy(events,dPath,0.2,'fu',0,samples,strata,'lag')
   #a5 <- cal_accuracy(events,dPath,0.5,'fu',0,samples,strata,'lag')
   b <- cal_accuracy(events,dPath,0.1,'mc',0,samples,strata,'lag')
-  c <- cal_accuracy(events,dPath,0.1,'ti',0,samples,strata,'lag')
+  #c <- cal_accuracy(events,dPath,0.1,'ti',0,samples,strata,'lag')
   #a2 <- cal_accuracy(events,dPath2,0.1,'fu',0,samples,strata,'nob')
   #b <- cal_accuracy(events,dPath2,0.1,'mc',0,samples,strata,'nob')
   #c <- cal_accuracy(events,dPath2,0.1,'ti',0,samples,strata,'nob')
   
   mps <- 231.656
-  #a3 <- cal_den(cal_detect_rate(events,dPath,0.05,'fu',c(0,3*mps*mps),T)[,2])
-  #a2 <- cal_den(cal_detect_rate(events,dPath,0.05,'fu',c(3*mps*mps,15*mps*mps),T)[,2])
-  #a <- cal_den(cal_detect_rate(events,dPath,0.05,'fu',c(15*mps*mps,1000*mps*mps),T)[,2])
+  #a3 <- cal_den(cal_detect_rate(events,dPath,0.1,'ti',c(0,3*mps*mps),T)[,2])
+  #a2 <- cal_den(cal_detect_rate(events,dPath,0.1,'ti',c(3*mps*mps,15*mps*mps),T)[,2])
+  #a <- cal_den(cal_detect_rate(events,dPath,0.1,'ti',c(15*mps*mps,1000*mps*mps),T)[,2])
 
-  #a <- cal_den(cal_detect_rate(events[events[,'SCENE']=='P227R065',],dPath,0.05,'fu',0,T)[,2])
-  #a2 <- cal_den(cal_detect_rate(events[events[,'SCENE']=='P232R066',],dPath,0.05,'fu',0,T)[,2])
-  #a3 <- cal_den(cal_detect_rate(events[events[,'SCENE']=='P007R059',],dPath,0.05,'fu',0,T)[,2])
+  #a <- cal_den(cal_detect_rate(events[events[,'SCENE']=='P227R065',],dPath,0.1,'ti',0,T)[,2])
+  #a2 <- cal_den(cal_detect_rate(events[events[,'SCENE']=='P232R066',],dPath,0.1,'ti',0,T)[,2])
+  #a3 <- cal_den(cal_detect_rate(events[events[,'SCENE']=='P007R059',],dPath,0.1,'ti',0,T)[,2])
 
-  #a <- cal_den(cal_detect_rate(events,dPath,0.05,'fu',0,T)[,2])
-  #b <- cal_den(cal_detect_rate(events,dPath,0.05,'mc',0,T)[,2])
-  #c <- cal_den(cal_detect_rate(events,dPath,0.05,'ti',0,T)[,2])
+  #a <- cal_den(cal_detect_rate(events,dPath,0.1,'fu',0,T)[,2])
+  #b <- cal_den(cal_detect_rate2(events,dPath2,0.1,'mc',0,T)[,2])
+  #c <- cal_den(cal_detect_rate(events,dPath,0.1,'ti',0,T)[,2])
   
-
   box(col='black',lwd=1)
   
-
-  
   polygon(c(a[,1],rev(a[,1])),c(a[,3],rev(a[,4])),col='grey96',border=NA) 
-  polygon(c(b[,1],rev(b[,1])),c(b[,3],rev(b[,4])),col='grey93',border=NA) 
-  polygon(c(c[,1],rev(c[,1])),c(c[,3],rev(c[,4])),col='grey90',border=NA) 
+  polygon(c(b[,1],rev(b[,1])),c(b[,3],rev(b[,4])),col='grey90',border=NA) 
+  #polygon(c(c[,1],rev(c[,1])),c(c[,3],rev(c[,4])),col='grey90',border=NA) 
   
   lines(a[,1],a[,2],col='red',lwd=2)
   lines(a[,1],a[,3],col='red',lwd=1,lty='dashed')
@@ -414,9 +414,9 @@ plot_detect_rate <- function(outPath){
   lines(b[,1],b[,2],col='blue',lwd=2)
   lines(b[,1],b[,3],col='blue',lwd=1,lty='dashed')
   lines(b[,1],b[,4],col='blue',lwd=1,lty='dashed')
-  lines(c[,1],c[,2],col='green',lwd=2)
-  lines(c[,1],c[,3],col='green',lwd=1,lty='dashed')
-  lines(c[,1],c[,4],col='green',lwd=1,lty='dashed')
+  #lines(c[,1],c[,2],col='green',lwd=2)
+  #lines(c[,1],c[,3],col='green',lwd=1,lty='dashed')
+  #lines(c[,1],c[,4],col='green',lwd=1,lty='dashed')
   
   abline(h=0.2,col='grey',lwd=1)
   abline(h=0.4,col='grey',lwd=1)
@@ -456,11 +456,25 @@ cal_den <- function(x){
 
 cal_strata_accu <- function(d,dataPath,pct,model,size,samples,lt=100){
   
-  d2 <- d[(pmax(d[,'D_FIRST_NF'],d[,'D_EVENT'])<2013000),]
+  d$CDATE <- 0
+  for(i in 1:nrow(d)){
+    if(d[i,'D_EVENT']>0){
+      d[i,'CDATE'] <- d[i,'D_EVENT']
+    }else{
+      d[i,'CDATE'] <- d[i,'D_FIRST_NF']
+    }
+  }
+  
+  d2 <- d[d['CDATE']<2013000,]
   for(i in 1:nrow(d2)){
     samples[samples[,'ID']==d2[i,'ID'],'REF'] <- 0
   }
-  d <- d[(d[,'D_FIRST_NF']>=2013000)|(d[,'D_EVENT']>=2013000),]
+  d <- d[d['CDATE']>=2013000,]
+  # d2 <- d[(pmax(d[,'D_FIRST_NF'],d[,'D_EVENT'])<2013000),]
+  # for(i in 1:nrow(d2)){
+  #   samples[samples[,'ID']==d2[i,'ID'],'REF'] <- 0
+  # }
+  # d <- d[(d[,'D_FIRST_NF']>=2013000)|(d[,'D_EVENT']>=2013000),]
   lags <- cal_detect_rate(d,dataPath,pct,model,size)
   samples$MAP <- 0
   
@@ -469,11 +483,13 @@ cal_strata_accu <- function(d,dataPath,pct,model,size,samples,lt=100){
     samples[samples[,'ID']==lags2[j,1],'MAP'] <- 1
   }
   
-  for(k in sort(unique(samples[,'STA']))){
-    print(paste('Conf for sta = ',k,sep=''))
-    accu <- conf_mat(samples[samples['STA']==k,])
-  }
-
+  #for(k in sort(unique(samples[,'STA']))){
+  #  print(paste('Conf for sta = ',k,sep=''))
+  #  accu <- conf_mat(samples[samples['STA']==k,])
+  #}
+    accu <- conf_mat(samples)
+    
+    
   return(0)
 }
 
