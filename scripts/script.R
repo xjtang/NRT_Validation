@@ -210,10 +210,10 @@ plot_alert_pct <- function(eventFile,resultPath,outPath,s){
     x <- doy2dy(r1[,'DATE'])
     plot(x,r1[,'PROP'],type='l',col='black',pch=16,
          main='Fusion',ylab='Alert Percentage',xlab='Date of Detection',
-         xlim=c(2013,2016),ylim=c(0,1),xaxt='n',bty='n',lwd=lwidth
+         xlim=c(2013.5,2014),ylim=c(0,1),xaxt='n',bty='n',lwd=lwidth
     )
     box(col='black',lwd=2)
-    axis(1,at=c(2013,2014,2015,2016))
+    axis(1,at=c(2013.5,2013.5833,2013.6667,2013.75,2013.8333,2013.9167,2014))
     if(events[i,'D_EVENT']>0){
       abline(v=doy2dy(events[i,'D_EVENT']),col='red',lwd=lwidth)
     }else{
@@ -228,10 +228,10 @@ plot_alert_pct <- function(eventFile,resultPath,outPath,s){
     x <- doy2dy(r2[,'DATE'])
     plot(x,r2[,'PROP'],type='l',col='black',pch=16,
          main='MCCDC',ylab='Alert Percentage',xlab='Date of Detection',
-         xlim=c(2013,2016),ylim=c(0,1),xaxt='n',bty='n',lwd=lwidth
+         xlim=c(2013.5,2014),ylim=c(0,1),xaxt='n',bty='n',lwd=lwidth
     )
     box(col='black',lwd=2)
-    axis(1,at=c(2013,2014,2015,2016))
+    axis(1,at=c(2013.5,2013.5833,2013.6667,2013.75,2013.8333,2013.9167,2014))
     if(events[i,'D_EVENT']>0){
       abline(v=doy2dy(events[i,'D_EVENT']),col='red',lwd=lwidth)
     }else{
@@ -246,10 +246,10 @@ plot_alert_pct <- function(eventFile,resultPath,outPath,s){
     x <- doy2dy(r3[,'DATE'])
     plot(x,r3[,'PROP'],type='l',col='black',pch=16,
          main='Terra-i',ylab='Alert Percentage',xlab='Date of Detection',
-         xlim=c(2013,2016),ylim=c(0,1),xaxt='n',bty='n',lwd=lwidth
+         xlim=c(2013.5,2014),ylim=c(0,1),xaxt='n',bty='n',lwd=lwidth
     )
     box(col='black',lwd=2)
-    axis(1,at=c(2013,2014,2015,2016))
+    axis(1,at=c(2013.5,2013.5833,2013.6667,2013.75,2013.8333,2013.9167,2014))
     if(events[i,'D_EVENT']>0){
       abline(v=doy2dy(events[i,'D_EVENT']),col='red',lwd=lwidth)
     }else{
@@ -297,7 +297,7 @@ alert_pct_grp <- function(d,dataPath,outPath,outName,s){
       model2 <- 'ti'
     }
     plot(0,-1,main=model,ylab='Alert Percentage',xlab='Lag Time',
-         xlim=c(-400,400),ylim=c(0,1),bty='n')
+         xlim=c(-50,200),ylim=c(0,1),bty='n')
     box(col='black',lwd=2)
     # loop through events
     for(j in 1:nrow(d)){
@@ -309,11 +309,11 @@ alert_pct_grp <- function(d,dataPath,outPath,outName,s){
         baseDate <- d[j,'D_FIRST_NF']
       }
       if(d[j,'SCENE']=='P227R065'){
-        pCol <- 'red'
+        pCol <- 'blue'
       }else if(d[j,'SCENE']=='P232R066'){
         pCol <- 'blue'
       }else{
-        pCol <- 'green'
+        pCol <- 'blue'
       }
       # read file
       eventFile <- paste(dataPath,model2,'/event_',pid,'.csv',sep='')
@@ -331,6 +331,7 @@ alert_pct_grp <- function(d,dataPath,outPath,outName,s){
       # plot
 
     }
+    abline(h=0.1,col='red',lwd=6)
   }
 
   # complete plot
